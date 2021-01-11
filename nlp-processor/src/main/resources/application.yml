@@ -1,0 +1,7 @@
+springdoc:
+  api-docs:
+    path: /docs
+  swagger-ui:
+    path: /swagger
+server:
+  port: 8081
