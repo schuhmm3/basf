@@ -1,16 +1,21 @@
 package com.basf.patentmanager.application.rest;
 
-import com.basf.patentmanager.application.model.rest.ProcessRequest;
+import com.basf.patentmanager.application.exception.ApplicationError;
+import com.basf.patentmanager.application.exception.PatentException;
+import com.basf.patentmanager.application.model.dto.PatentFieldsPaths;
+import com.basf.patentmanager.application.model.rest.UploadRequest;
 import com.basf.patentmanager.application.service.ApplicationPatentService;
+import com.googlecode.jmapper.JMapper;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-@Controller
+import java.util.Objects;
+
+@RestController
 @RequestMapping("/api/patent")
 public class PatentController {
 
@@ -21,9 +26,14 @@ public class PatentController {
         this.patentService = patentService;
     }
 
-    @PostMapping(name = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Mono<Boolean> process(@ModelAttribute ProcessRequest processRequest) {
-        return this.patentService.upload(processRequest.getFile());
+    @Operation(summary = "Uploads a patent as XML or multiple patents inside a ZIP file")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Mono<Void> process(@ModelAttribute UploadRequest request) {
+        PatentFieldsPaths paths = new JMapper<>(PatentFieldsPaths.class, UploadRequest.class).getDestination(request);
+        if (paths.pathsAreValid())
+            return this.patentService.upload(request.getFile(), paths);
+        else
+            throw new PatentException(ApplicationError.INVALID_XML_PATHS);
     }
 
 }

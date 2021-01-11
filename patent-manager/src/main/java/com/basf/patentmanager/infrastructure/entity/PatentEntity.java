@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.UUID;
 
-@Document
+@Document(collection = "patent")
 @Data
 public class PatentEntity {
 
@@ -17,7 +17,7 @@ public class PatentEntity {
     private UUID uuid;
 
     @JMap
-    private String applicationNumber;
+    private String application;
 
     @JMap
     private Date date;

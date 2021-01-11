@@ -28,7 +28,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation group: 'com.googlecode.jmapper-framework', name: 'jmapper-core', version: '1.6.1.CR2'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
-    implementation 'org.springframework.cloud:spring-cloud-stream'
+    //implementation 'org.springframework.cloud:spring-cloud-stream'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'

@@ -17,7 +17,7 @@ public class Patent {
 
     @JMap
     @NonNull
-    private String applicationNumber;
+    private String application;
 
     @JMap
     @NonNull
