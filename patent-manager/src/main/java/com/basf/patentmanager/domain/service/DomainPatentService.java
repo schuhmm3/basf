@@ -8,6 +8,11 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
+/**
+ * Domain Service that implements {@link PatentService} to store the patents
+ *
+ * @author robertogomez
+ */
 @Service
 public class DomainPatentService implements PatentService {
 
@@ -18,11 +23,25 @@ public class DomainPatentService implements PatentService {
         this.patentRepository = patentRepository;
     }
 
+    /**
+     * Process and stores the patent in the repository
+     *
+     * @param patent Patent to process and store
+     *
+     * @return {@link Mono} emitting the saved {@link Patent} or {@link Mono#empty()} if none.
+     */
     @Override
     public Mono<Patent> addPatent(Patent patent) {
         return this.patentRepository.save(patent);
     }
 
+    /**
+     * Finds a patent by its UUID
+     *
+     * @param id Id to find the patent in the repository
+     *
+     * @return {@link Mono} emitting the found {@link Patent}.
+     */
     @Override
     public Mono<Patent> findPatent(UUID id) {
         return this.patentRepository.findById(id);

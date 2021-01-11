@@ -15,11 +15,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+/**
+ * Application service to interact with the domain layer and map the received file into patents
+ *
+ * @author robertogomez
+ */
 @Service
 @Slf4j
 public class ApplicationPatentService {
@@ -33,6 +36,13 @@ public class ApplicationPatentService {
         this.xmlMapperService = xmlMapperService;
     }
 
+    /**
+     * Handles the upload of a file
+     *
+     * @param filePart File to upload
+     * @param paths    Paths from the XML to retrieve all the fields
+     * @return {@link Mono} of {@link Void} when the upload ends
+     */
     public Mono<Void> upload(FilePart filePart, PatentFieldsPaths paths) {
 
         AtomicReference<File> file = new AtomicReference<>();
@@ -47,42 +57,54 @@ public class ApplicationPatentService {
 
     }
 
+    /**
+     * Processes the file to translate it into multiple patents
+     *
+     * @param file  File to process
+     * @param paths Paths from the XML to retrieve all the fields
+     */
     private void processPatents(File file, PatentFieldsPaths paths) {
-        readZip(file, paths);
+        try {
+            if (Files.probeContentType(file.toPath()).equals("application/zip"))
+                readZip(file, paths);
+            else
+                throw new PatentException(ApplicationError.INVALID_FILE_FORMAT);
+        } catch (IOException e) {
+            throw new PatentException(ApplicationError.READ_FILE_ERROR, e);
+        }
     }
 
     /**
      * Reads zip file
      *
-     * @param file
-     * @param fieldsPaths
-     * @return
+     * @param file  File to process
+     * @param paths Paths from the XML to retrieve all the fields
      */
-    void readZip(File file, PatentFieldsPaths fieldsPaths) {
+    private void readZip(File file, PatentFieldsPaths paths) {
         try (ZipFile zf = new ZipFile(file)) {
             log.info("Reading zip file {}", zf.getName());
             zf.stream().parallel()
-                    .map(entry -> readZipEntry(zf, entry, fieldsPaths))
+                    .map(entry -> readZipEntry(zf, entry, paths))
                     .map(patentService::addPatent)
                     .forEach(Mono::subscribe);
         } catch (IOException e) {
-            throw new PatentException(ApplicationError.INTERNAL_ERROR, e);
+            throw new PatentException(ApplicationError.READ_FILE_ERROR, e);
         }
     }
 
     /**
      * Reads a zip entry and converts it into a Patent
      *
-     * @param file        ZipFile where the entry is stored
-     * @param entry       Entry to read
-     * @param fieldsPaths Paths to retrieve the fields
+     * @param file  ZipFile where the entry is stored
+     * @param entry Entry to read
+     * @param paths Paths from the XML to retrieve all the fields
      * @return The patent
      */
-    Patent readZipEntry(ZipFile file, ZipEntry entry, PatentFieldsPaths fieldsPaths) {
+    private Patent readZipEntry(ZipFile file, ZipEntry entry, PatentFieldsPaths paths) {
         try {
-            return this.xmlMapperService.createPatentFromXml(file.getInputStream(entry), fieldsPaths);
+            return this.xmlMapperService.createPatentFromXml(file.getInputStream(entry), paths);
         } catch (IOException e) {
-            throw new PatentException(ApplicationError.INTERNAL_ERROR, e);
+            throw new PatentException(ApplicationError.READ_FILE_ERROR, e);
         }
     }
 

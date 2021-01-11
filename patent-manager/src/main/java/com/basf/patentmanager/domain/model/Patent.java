@@ -6,6 +6,11 @@ import lombok.*;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * Patent entity that stores all the patent information
+ *
+ * @author robertogomez
+ */
 @Data
 //Required annotations to use JMapper
 @NoArgsConstructor

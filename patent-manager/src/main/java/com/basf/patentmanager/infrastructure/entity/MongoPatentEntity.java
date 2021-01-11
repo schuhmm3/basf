@@ -8,9 +8,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * Patent entity that acts as the MongoDB Dto of the {@link com.basf.patentmanager.domain.model.Patent} domain entity
+ *
+ * @author robertogomez
+ */
 @Document(collection = "patent")
 @Data
-public class PatentEntity {
+public class MongoPatentEntity {
 
     @JMap
     @Id

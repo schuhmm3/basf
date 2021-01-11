@@ -5,6 +5,11 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
+/**
+ * Interfaces that defines the API for the services that handle the patents
+ *
+ * @author robertogomez
+ */
 public interface PatentService {
 
     Mono<Patent> addPatent(Patent patent);

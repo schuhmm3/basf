@@ -28,6 +28,11 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+/**
+ * Service to map an XML into a Patent
+ *
+ * @author robertogomez
+ */
 @Service
 @Slf4j
 public class XmlMapperService {
@@ -53,7 +58,7 @@ public class XmlMapperService {
                     .stream()
                     .collect(Collectors.toMap(Map.Entry::getKey, entry -> getXmlValue(xmlDocument.get(), xPath.get(), entry)));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            throw new PatentException(ApplicationError.INTERNAL_ERROR, e);
+            throw new PatentException(ApplicationError.PARSING_FILE_ERROR, e);
         }
         return mapper.convertValue(map, Patent.class);
     }
@@ -82,7 +87,7 @@ public class XmlMapperService {
             }
             return value;
         } catch (XPathExpressionException | ParseException e) {
-            throw new PatentException(ApplicationError.INTERNAL_ERROR, e);
+            throw new PatentException(ApplicationError.PARSING_FILE_ERROR, e);
         }
     }
 
