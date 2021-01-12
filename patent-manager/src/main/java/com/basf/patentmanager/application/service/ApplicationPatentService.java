@@ -6,12 +6,18 @@ import com.basf.patentmanager.application.model.dto.PatentFieldsPaths;
 import com.basf.patentmanager.domain.model.Patent;
 import com.basf.patentmanager.domain.service.PatentService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tika.config.TikaConfig;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.io.TikaInputStream;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.mime.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.concurrent.atomic.AtomicReference;
@@ -47,12 +53,13 @@ public class ApplicationPatentService {
 
         AtomicReference<File> file = new AtomicReference<>();
         try {
-            file.set(Files.createTempFile("", ".zip").toFile());
+            file.set(Files.createTempFile("", ".tmp").toFile());
         } catch (IOException e) {
             e.printStackTrace();
         }
         return filePart.transferTo(file.get())
-                .doOnTerminate(() -> processPatents(file.get(), paths))
+                .onErrorStop()
+                .doOnSuccess(v -> processPatents(file.get(), paths))
                 .then();
 
     }
@@ -65,10 +72,30 @@ public class ApplicationPatentService {
      */
     private void processPatents(File file, PatentFieldsPaths paths) {
         try {
-            if (Files.probeContentType(file.toPath()).equals("application/zip"))
+            Metadata metadata = new Metadata();
+            metadata.set(Metadata.RESOURCE_NAME_KEY, file.toString());
+            MediaType mediaType = new TikaConfig().getDetector().detect(
+                    TikaInputStream.get(file.toPath()), metadata);
+            if (mediaType.getSubtype().equals("zip"))
                 readZip(file, paths);
+            else if (mediaType.getSubtype().endsWith("xml"))
+                readXml(file, paths);
             else
                 throw new PatentException(ApplicationError.INVALID_FILE_FORMAT);
+        } catch (IOException | TikaException e) {
+            throw new PatentException(ApplicationError.READ_FILE_ERROR, e);
+        }
+    }
+
+    /**
+     * Reads XML file
+     *
+     * @param file  XML File to process
+     * @param paths Paths from the XML to retrieve all the patent fields
+     */
+    private void readXml(File file, PatentFieldsPaths paths) {
+        try {
+            this.patentService.addPatent(this.xmlMapperService.createPatentFromXml(new FileInputStream(file), paths)).subscribe();
         } catch (IOException e) {
             throw new PatentException(ApplicationError.READ_FILE_ERROR, e);
         }

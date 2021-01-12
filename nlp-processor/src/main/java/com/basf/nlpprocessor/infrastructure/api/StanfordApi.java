@@ -29,7 +29,9 @@ public class StanfordApi implements NlpApi {
 
         Properties props = new Properties();
         props.setProperty("annotators", stanfordProperties.getComponents());
-        props.setProperty("ner.applyFineGrained", String.valueOf(stanfordProperties.getNer()));
+        props.setProperty("ner.applyFineGrained", String.valueOf(stanfordProperties.getNer().isApplyFineGrained()));
+        props.setProperty("ner.useSUTime", String.valueOf(stanfordProperties.getNer().isUseSUTime()));
+        props.setProperty("ner.applyNumericClassifiers", String.valueOf(stanfordProperties.getNer().isApplyNumericClassifiers()));
 
         // set up pipeline
         this.pipeline = new StanfordCoreNLP(props);
@@ -42,17 +44,21 @@ public class StanfordApi implements NlpApi {
      * @return {@link Mono} emitting the {@link Document} with the result of the NLP process or {@link Mono#empty()} if none.
      */
     public Mono<Document> processNlp(String text) {
-        CoreDocument doc = new CoreDocument(text);
-        this.pipeline.annotate(doc);
-        return Mono.justOrEmpty(new Document(
-                doc.tokens()
-                        .parallelStream()
-                        .map(t -> new Token(t.originalText(), t.tag(), t.lemma(), !t.ner().equals("O") ? t.ner() : ""))
-                        .collect(Collectors.toList()),
-                text,
-                doc.entityMentions().parallelStream()
-                        .map(ent -> new Entity(ent.entityType(), ent.text()))
-                        .collect(Collectors.toList())));
+        if (text != null && !text.isEmpty()) {
+            CoreDocument doc = new CoreDocument(text);
+            this.pipeline.annotate(doc);
+            return Mono.just(new Document(
+                    doc.tokens()
+                            .parallelStream()
+                            .map(t -> new Token(t.originalText(), t.tag(), t.lemma(), !t.ner().equals("O") ? t.ner() : ""))
+                            .collect(Collectors.toList()),
+                    text,
+                    doc.entityMentions().parallelStream()
+                            .map(ent -> new Entity(ent.entityType(), ent.text()))
+                            .collect(Collectors.toList())));
+        }else {
+            return Mono.empty();
+        }
     }
 
 }

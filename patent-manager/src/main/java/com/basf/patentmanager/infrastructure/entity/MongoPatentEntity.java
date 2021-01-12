@@ -1,11 +1,14 @@
 package com.basf.patentmanager.infrastructure.entity;
 
+import com.basf.patentmanager.domain.model.Entity;
 import com.googlecode.jmapper.annotations.JMap;
 import lombok.Data;
+import lombok.NonNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -35,5 +38,8 @@ public class MongoPatentEntity {
 
     @JMap
     private String text;
+
+    @JMap
+    private List<Entity> entities;
 
 }

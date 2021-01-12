@@ -17,7 +17,7 @@ public class StanfordProperties {
     /**
      * Properties to configure the NER
      */
-    private Ner ner;
+    private Ner ner = new Ner();
 
     /**
      * Components to include in the pipeline
@@ -26,13 +26,25 @@ public class StanfordProperties {
 
     @Data
     @NoArgsConstructor
-    private static class Ner {
+    public static class Ner {
 
         /**
          * Check if apply fine-grained NER, setting this to True will slow down the process.
          * Check <a>https://stanfordnlp.github.io/CoreNLP/ner.html</a> for more information.
          */
-        private boolean nerApplyFineGrained = false;
+        private boolean applyFineGrained = false;
+
+        /**
+         * apply SUTime library to detect temporal expressions in English.
+         * Check <a>https://stanfordnlp.github.io/CoreNLP/ner.html</a> for more information.
+         */
+        private boolean useSUTime = false;
+
+        /**
+         * Check if apply numeric classifiers.
+         * Check <a>https://stanfordnlp.github.io/CoreNLP/ner.html</a> for more information.
+         */
+        private boolean applyNumericClassifiers = false;
 
     }
 }

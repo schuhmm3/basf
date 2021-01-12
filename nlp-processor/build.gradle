@@ -14,6 +14,10 @@ configurations {
     }
 }
 
+bootRun {
+    systemProperties = System.properties
+}
+
 repositories {
     mavenCentral()
 }
@@ -22,6 +26,7 @@ dependencies {
     implementation group: 'edu.stanford.nlp', name: 'stanford-corenlp', version: '4.2.0'
     implementation group: 'edu.stanford.nlp', name: 'stanford-corenlp', version: '4.2.0', classifier: 'models'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-webflux-ui', version: '1.5.2'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'

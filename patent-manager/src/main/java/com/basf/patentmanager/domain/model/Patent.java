@@ -4,6 +4,7 @@ import com.googlecode.jmapper.annotations.JMap;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -39,6 +40,9 @@ public class Patent {
     @JMap
     @NonNull
     private String text;
+
+    @JMap
+    private List<Entity> entities;
 }
 
 

@@ -16,6 +16,7 @@ public enum ApplicationError {
     INVALID_FILE_FORMAT(1002, "The application only can process ZIP files"),
     READ_FILE_ERROR(1003, "Error reading file"),
     PARSING_FILE_ERROR(1004, "Error parsing file"),
+    EXTERNAL_NLP_SERVICE_ERROR(2001, "Error calling external NLP Service"),
     INTERNAL_ERROR(5001, "Internal error");
 
     /**
