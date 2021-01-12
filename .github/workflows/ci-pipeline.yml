@@ -32,14 +32,14 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.11
-      - name: NLP Processor Test
-        run: |
-          cd $GITHUB_WORKSPACE/nlp-processor
-          ./gradlew unitTest
-          ./gradlew intTest
       - name: Patent Manager Test
         run: |
           cd $GITHUB_WORKSPACE/patent-manager
+          ./gradlew unitTest --info
+          ./gradlew intTest --info
+      - name: NLP Processor Test
+        run: |
+          cd $GITHUB_WORKSPACE/nlp-processor
           ./gradlew unitTest
           ./gradlew intTest
 
