@@ -43,7 +43,7 @@ class PatentControllerTest {
      void uploadReturnsOkIfValidRequest() {
         when(service.uploadPatent(any(FilePart.class), any(PatentFieldsPaths.class))).thenReturn(Mono.just(true).then());
         var bodyBuilder = new MultipartBodyBuilder();
-        bodyBuilder.part("file", new ClassPathResource("uspat1_201831_back_80001_100000.zip"));
+        bodyBuilder.part("file", new ClassPathResource("US06193294B1.xml"));
         bodyBuilder.part("application", "path/application");
         bodyBuilder.part("summary", "path/summary");
         bodyBuilder.part("date", "path/date");
@@ -60,7 +60,7 @@ class PatentControllerTest {
      void uploadReturns400IfNotValidRequest() {
         when(service.uploadPatent(any(FilePart.class), any(PatentFieldsPaths.class))).thenReturn(Mono.just(true).then());
         var bodyBuilder = new MultipartBodyBuilder();
-        bodyBuilder.part("file", new ClassPathResource("uspat1_201831_back_80001_100000.zip"));
+        bodyBuilder.part("file", new ClassPathResource("US06193294B1.xml"));
         bodyBuilder.part("application", "");
         bodyBuilder.part("summary", "");
         bodyBuilder.part("date", "");
