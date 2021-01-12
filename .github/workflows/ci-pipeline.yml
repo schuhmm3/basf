@@ -21,7 +21,7 @@ jobs:
   test:
     name: Run Test
     runs-on: ubuntu-18.04
-
+    needs: build
     steps:
       - uses: actions/checkout@v1
       - name: Set up JDK 11
@@ -42,7 +42,7 @@ jobs:
   publish-artifacts:
     name: Run Test
     runs-on: ubuntu-18.04
-
+    needs: test
     steps:
       - uses: actions/checkout@v1
       - name: Set up JDK 11
@@ -66,7 +66,7 @@ jobs:
   publish-docker:
     name: Publish - Docker Hub
     runs-on: ubuntu-18.04
-    needs: [test, sonar]
+    needs: publish-artifacts
     env:
       REGISTRY: docker.pkg.github.com/$GITHUB_ACTOR
     steps:
