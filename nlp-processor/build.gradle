@@ -69,6 +69,7 @@ publishing {
 }
 
 task unitTest( type: Test ) {
+    maxHeapSize = "512m"
     useJUnitPlatform()
     testLogging {
         events "passed", "skipped", "failed", "standardError"
@@ -77,6 +78,7 @@ task unitTest( type: Test ) {
 }
 
 task intTest( type: Test ) {
+    maxHeapSize = "512m"
     useJUnitPlatform()
     testLogging {
         events "passed", "skipped", "failed", "standardError"
