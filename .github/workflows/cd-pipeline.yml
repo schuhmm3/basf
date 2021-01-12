@@ -10,38 +10,42 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v1
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
       - name: Build JAR
         run: |
-          cd nlp-processor
+          cd $GITHUB_WORKSPACE/nlp-processor
           ./gradlew clean build -PskipTests
-          cd patent-manager
+          cd $GITHUB_WORKSPACE/nlp-processor
           ./gradlew clean build -PskipTests
 
   test:
     name: Run Test
     runs-on: ubuntu-18.04
-
+    needs: build
     steps:
       - uses: actions/checkout@v1
       - name: Set up JDK 11
         uses: actions/setup-java@v1
         with:
           java-version: 1.11
-      - name: NLP Processor Test
-        run: |
-          cd $GITHUB_WORKSPACE/nlp-processor
-          ./gradlew unitTest
-          ./gradlew intTest
       - name: Patent Manager Test
         run: |
           cd $GITHUB_WORKSPACE/patent-manager
           ./gradlew unitTest
           ./gradlew intTest
+      - name: NLP Processor Test
+        run: |
+          cd $GITHUB_WORKSPACE/nlp-processor
+          ./gradlew unitTest
+          ./gradlew intTest
 
   publish-artifacts:
-    name: Run Test
+    name: Publish artifacts
     runs-on: ubuntu-18.04
-
+    needs: test
     steps:
       - uses: actions/checkout@v1
       - name: Set up JDK 11
@@ -62,29 +66,31 @@ jobs:
           cd $GITHUB_WORKSPACE/patent-manager
           ./gradlew publish
 
-  publish-docker:
-    name: Publish - Docker Hub
-    runs-on: ubuntu-18.04
-    needs: [test, sonar]
-    env:
-      REGISTRY: docker.pkg.github.com/${{ GITHUB_ACTOR }}
-      REPO: ${{ secrets.DOCKER_REPO }}
-    steps:
-      - uses: actions/checkout@v1
-      - name: Set up JDK 11
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11.0.4
-      - name: Login to Docker Hub
-        run: docker login https://docker.pkg.github.com -u ${{ GITHUB_ACTOR }} -p ${{ secrets.GITHUB_TOKEN }}
-      - name: Build Docker image NLP Processor
-        run: |
-          cd $GITHUB_WORKSPACE/nlp-processor/docker
-          ./build-image.sh
-      - name: Build Docker image Patent Manager
-        run: |
-          cd $GITHUB_WORKSPACE/patent-manager/docker
-          ./build-image.sh
+# Commented because we don't have enough space using a github free account
+#  publish-docker:
+#    name: Publish Docker images
+#    runs-on: ubuntu-18.04
+#    needs: publish-artifacts
+#    env:
+#      REGISTRY: docker.pkg.github.com/$GITHUB_ACTOR
+#    steps:
+#      - uses: actions/checkout@v1
+#      - name: Set up JDK 11
+#        uses: actions/setup-java@v1
+#        with:
+#          java-version: 11.0.4
+#      - name: Login to Docker Hub
+#        run: docker login https://docker.pkg.github.com -u $GITHUB_ACTOR -p ${{ secrets.GITHUB_TOKEN }}
+#      - name: Build Docker image NLP Processor
+#        run: |
+#          cd $GITHUB_WORKSPACE/nlp-processor/docker
+#          ./gradlew clean build -PskipTests
+#          ./build-image.sh
+#      - name: Build Docker image Patent Manager
+#        run: |
+#          cd $GITHUB_WORKSPACE/patent-manager/docker
+#          ./gradlew clean build -PskipTests
+#          ./build-image.sh
 #      - name: Publish Docker image
 #        run: |
 #          docker push $REGISTRY/patent-manager

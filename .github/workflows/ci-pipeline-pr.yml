@@ -1,7 +1,10 @@
-name: CI Pipeline
+name: CI Pipeline for PR
 
 on:
   push:
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
@@ -33,7 +36,9 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/patent-manager
           ./gradlew unitTest
+          ./gradlew intTest
       - name: NLP Processor Test
         run: |
           cd $GITHUB_WORKSPACE/nlp-processor
           ./gradlew unitTest
+          ./gradlew intTest
