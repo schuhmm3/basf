@@ -2,6 +2,7 @@ package com.basf.patentmanager.application.model.rest;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.NonNull;
 import org.springframework.http.codec.multipart.FilePart;
 
 import javax.validation.constraints.NotBlank;
@@ -15,6 +16,7 @@ import javax.validation.constraints.NotBlank;
 public class UploadRequest {
 
     @NotBlank
+    @NonNull
     private FilePart file;
 
     @Schema(defaultValue = "questel-patent-document/bibliographic-data/application-reference/document-id[@data-format='questel']/doc-number")

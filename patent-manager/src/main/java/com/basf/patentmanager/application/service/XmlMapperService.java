@@ -44,7 +44,7 @@ public class XmlMapperService {
      * @param fieldsPaths Paths to retrieve from XML
      * @return The patent
      */
-    Patent createPatentFromXml(InputStream stream, PatentFieldsPaths fieldsPaths) {
+    public Patent createPatentFromXml(InputStream stream, PatentFieldsPaths fieldsPaths) {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> map = mapper.convertValue(fieldsPaths, Map.class);
         AtomicReference<Document> xmlDocument = new AtomicReference<>();
@@ -72,7 +72,7 @@ public class XmlMapperService {
      * @param entry       Key-value pair with the field name and the xml path to retrieve it
      * @return The text content retrieved from the XML path
      */
-    Serializable getXmlValue(Document xmlDocument, XPath xPath, Map.Entry<String, Object> entry) {
+    private Serializable getXmlValue(Document xmlDocument, XPath xPath, Map.Entry<String, Object> entry) {
         try {
             String value = "";
             String fieldPath = (String) entry.getValue();
@@ -80,7 +80,7 @@ public class XmlMapperService {
             if (xmlNode != null) {
                 value = xmlNode.getTextContent().strip().replaceAll("(\\n( )+)|(( )+\\n)", "\n");
                 if (entry.getKey().equals("date"))
-                    return new SimpleDateFormat("yyyymmdd").parse(value);
+                    return new SimpleDateFormat("yyyyMMdd").parse(value);
                 return value;
             } else {
                 log.warn("Couldn't map {}", entry.getKey());

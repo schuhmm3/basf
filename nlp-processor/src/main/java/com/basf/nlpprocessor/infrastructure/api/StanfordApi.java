@@ -28,12 +28,14 @@ public class StanfordApi implements NlpApi {
     public StanfordApi(StanfordProperties stanfordProperties) {
 
         Properties props = new Properties();
+
+        //Set up some ner properties before creating the pipeline
         props.setProperty("annotators", stanfordProperties.getComponents());
         props.setProperty("ner.applyFineGrained", String.valueOf(stanfordProperties.getNer().isApplyFineGrained()));
         props.setProperty("ner.useSUTime", String.valueOf(stanfordProperties.getNer().isUseSUTime()));
         props.setProperty("ner.applyNumericClassifiers", String.valueOf(stanfordProperties.getNer().isApplyNumericClassifiers()));
 
-        // set up pipeline
+        //Create the pipeline so we don't create every time we process a document
         this.pipeline = new StanfordCoreNLP(props);
     }
 
@@ -48,15 +50,18 @@ public class StanfordApi implements NlpApi {
             CoreDocument doc = new CoreDocument(text);
             this.pipeline.annotate(doc);
             return Mono.just(new Document(
+                    // We build our tokens from the stanford document
                     doc.tokens()
                             .parallelStream()
                             .map(t -> new Token(t.originalText(), t.tag(), t.lemma(), !t.ner().equals("O") ? t.ner() : ""))
                             .collect(Collectors.toList()),
                     text,
-                    doc.entityMentions().parallelStream()
+                    // We build our entities from the stanford document
+                    doc.entityMentions()
+                            .parallelStream()
                             .map(ent -> new Entity(ent.entityType(), ent.text()))
                             .collect(Collectors.toList())));
-        }else {
+        } else {
             return Mono.empty();
         }
     }

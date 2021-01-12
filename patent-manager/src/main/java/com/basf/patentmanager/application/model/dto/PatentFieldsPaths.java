@@ -1,11 +1,7 @@
 package com.basf.patentmanager.application.model.dto;
 
 import com.googlecode.jmapper.annotations.JMap;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import org.springframework.http.codec.multipart.FilePart;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * DTO to store the paths to to retrieve each field from the XML

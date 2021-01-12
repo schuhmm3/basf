@@ -3,4 +3,5 @@ if [[ -z ${VERSION} ]]; then
   VERSION="latest"
 fi
 cp ../build/libs/*.jar app.jar
-echo docker build . -t ${REGISTRY}nlp-processor:${VERSION}
+docker build . -t "${REGISTRY}"nlp-processor:${VERSION} --no-cache
+rm app.jar

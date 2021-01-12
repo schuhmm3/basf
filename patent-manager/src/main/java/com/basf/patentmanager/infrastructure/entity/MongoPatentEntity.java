@@ -3,7 +3,6 @@ package com.basf.patentmanager.infrastructure.entity;
 import com.basf.patentmanager.domain.model.Entity;
 import com.googlecode.jmapper.annotations.JMap;
 import lombok.Data;
-import lombok.NonNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 

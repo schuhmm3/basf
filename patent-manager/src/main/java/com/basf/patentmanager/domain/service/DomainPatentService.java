@@ -1,16 +1,14 @@
 package com.basf.patentmanager.domain.service;
 
-import com.basf.patentmanager.application.exception.ApplicationError;
-import com.basf.patentmanager.application.exception.PatentException;
 import com.basf.patentmanager.domain.api.NlpApi;
 import com.basf.patentmanager.domain.model.Patent;
 import com.basf.patentmanager.domain.repository.PatentRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 /**
@@ -18,18 +16,13 @@ import java.util.UUID;
  *
  * @author robertogomez
  */
+@RequiredArgsConstructor
 @Service
 @Slf4j
 public class DomainPatentService implements PatentService {
 
     private final PatentRepository patentRepository;
     private final NlpApi nlpApi;
-
-    @Autowired
-    public DomainPatentService(PatentRepository patentRepository, NlpApi nlpApi) {
-        this.patentRepository = patentRepository;
-        this.nlpApi = nlpApi;
-    }
 
     /**
      * Process and stores the patent in the repository
@@ -53,5 +46,37 @@ public class DomainPatentService implements PatentService {
     @Override
     public Mono<Patent> findPatent(UUID id) {
         return this.patentRepository.findById(id);
+    }
+
+    /**
+     * Finds the {@link Patent} by its application reference
+     *
+     * @param application application number to find the patent
+     * @return {@link Flux} emitting the {@link Patent} found or {@link Mono#empty()} if none.
+     */
+    @Override
+    public Flux<Patent> findPatent(String application) {
+        return this.patentRepository.findByApplication(application);
+    }
+
+    /**
+     * Deletes the {@link Patent} by its application reference
+     *
+     * @param id id to delete the patent
+     * @return {@link Mono} when the operation is completed.
+     */
+    @Override
+    public Mono<Void> deletePatent(UUID id) {
+        return this.patentRepository.deleteById(id);
+    }
+
+    /**
+     * Deletes all the {@link Patent}
+     *
+     * @return {@link Mono} when the operation is completed.
+     */
+    @Override
+    public Mono<Void> deleteAll() {
+        return this.patentRepository.deleteAll();
     }
 }

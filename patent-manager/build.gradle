@@ -50,6 +50,22 @@ dependencyManagement {
     }
 }
 
+task unitTest( type: Test ) {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed", "standardError"
+    }
+    exclude '**/*IntegrationTest*'
+}
+
+task intTest( type: Test ) {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed", "standardError"
+    }
+    include '**/*IntegrationTest*'
+}
+
 test {
     useJUnitPlatform()
 }

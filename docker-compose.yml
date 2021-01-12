@@ -27,14 +27,14 @@ services:
     ports:
       - 8082:8082
     environment:
-      - SPRING_PROFILES_ACTIVE: prod
+      SPRING_PROFILES_ACTIVE: prod
     labels:
       kompose.service.type: nodeport
       nginx.ingress.kubernetes.io/rewrite-target: /$$1
       kompose.image-pull-policy: "Always"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
-      start_period: 60s
+      start_period: 5s
 
   nlp-processor:
     image: ${REGISTRY}nlp-processor:${PATENT_MANAGER_VERSION:-latest}
@@ -46,7 +46,7 @@ services:
         limits:
           memory: 2G
     environment:
-      - SPRING_PROFILES_ACTIVE: prod
+      SPRING_PROFILES_ACTIVE: prod
     ports:
       - 8081:8081
     labels:

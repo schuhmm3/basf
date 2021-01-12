@@ -1,3 +1,3 @@
-FROM openjdk:11-jdk-alpine
+FROM adoptopenjdk/openjdk11:alpine-slim
 COPY app.jar app.jar
 ENTRYPOINT ["java","-jar","/app.jar"]

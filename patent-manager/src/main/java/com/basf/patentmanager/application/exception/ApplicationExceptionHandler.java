@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ApplicationExceptionHandler {
 
     /**
-     * Hnadler for all the {@link PatentException} and its children
+     * Handler for all the {@link PatentException} and its children
      *
      * @param ex Exception to handle
      * @return Response entity with the {@link ErrorResponse} on its body
      */
     @ExceptionHandler(PatentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorResponse> handleConnversion(PatentException ex) {
+    public ResponseEntity<ErrorResponse> handleConversion(PatentException ex) {
         return new ResponseEntity<>(new ErrorResponse(ex.getErrorCode(), ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 

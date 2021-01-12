@@ -56,7 +56,7 @@ public class BasfNlpApi implements NlpApi {
      */
     public List<Entity> getEntities(String text) {
         if (text != null && !text.isEmpty()) {
-            log.info("Calling nlp service");
+            log.debug("Calling nlp service");
             return this.webClient
                     .post()
                     .uri(this.nerUri)

@@ -6,6 +6,7 @@ import com.basf.patentmanager.infrastructure.entity.MongoPatentEntity;
 import com.googlecode.jmapper.JMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -30,12 +31,23 @@ public class MongoRepository implements PatentRepository {
     }
 
     /**
+     * Saves a {@link Patent} into MongoDB
+     *
+     * @param patent patent to store
+     * @return {@link Mono} emitting the saved {@link Patent}.
+     */
+    public Mono<Patent> save(Patent patent) {
+        return this.springDataMongoRepository
+                .save(this.patentMapper.getDestination(patent))
+                .map(this.patentEntityMapper::getDestination);
+    }
+
+    /**
      * Finds a {@link Patent} by its UUID
      *
      * @param uuid id to find the patent
      * @return {@link Mono} emitting the found {@link Patent} or {@link Mono#empty()} if none.
      */
-    @Override
     public Mono<Patent> findById(UUID uuid) {
         return this.springDataMongoRepository
                 .findById(uuid)
@@ -43,16 +55,35 @@ public class MongoRepository implements PatentRepository {
     }
 
     /**
-     * Saves a {@link Patent} into MongoDB
+     * Finds the {@link Patent} by its application reference
      *
-     * @param patent patent to store
-     * @return {@link Mono} emitting the saved {@link Patent}.
+     * @param application application number to find the patent
+     * @return {@link Flux} emitting the {@link Patent} found or {@link Mono#empty()} if none.
      */
-    @Override
-    public Mono<Patent> save(Patent patent) {
+    public Flux<Patent> findByApplication(String application) {
         return this.springDataMongoRepository
-                .save(this.patentMapper.getDestination(patent))
+                .findByApplication(application)
                 .map(this.patentEntityMapper::getDestination);
+    }
+
+    /**
+     * Deletes the {@link Patent} by its application reference
+     *
+     * @param uuid id to delete the patent
+     * @return {@link Mono} when the operation is completed.
+     */
+    public Mono<Void> deleteById(UUID uuid) {
+        return this.springDataMongoRepository
+                .deleteById(uuid);
+    }
+
+    /**
+     * Deletes all the {@link Patent}
+     *
+     * @return {@link Mono} when the operation is completed.
+     */
+    public Mono<Void> deleteAll() {
+        return this.springDataMongoRepository.deleteAll();
     }
 
 }

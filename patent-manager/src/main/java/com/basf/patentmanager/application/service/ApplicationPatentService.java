@@ -5,42 +5,41 @@ import com.basf.patentmanager.application.exception.PatentException;
 import com.basf.patentmanager.application.model.dto.PatentFieldsPaths;
 import com.basf.patentmanager.domain.model.Patent;
 import com.basf.patentmanager.domain.service.PatentService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import static org.apache.tika.metadata.TikaMetadataKeys.RESOURCE_NAME_KEY;
 
 /**
  * Application service to interact with the domain layer and map the received file into patents
  *
  * @author robertogomez
  */
+@RequiredArgsConstructor
 @Service
 @Slf4j
 public class ApplicationPatentService {
 
     private final PatentService patentService;
     private final XmlMapperService xmlMapperService;
-
-    @Autowired
-    public ApplicationPatentService(PatentService patentService, XmlMapperService xmlMapperService) {
-        this.patentService = patentService;
-        this.xmlMapperService = xmlMapperService;
-    }
 
     /**
      * Handles the upload of a file
@@ -49,7 +48,7 @@ public class ApplicationPatentService {
      * @param paths    Paths from the XML to retrieve all the fields
      * @return {@link Mono} of {@link Void} when the upload ends
      */
-    public Mono<Void> upload(FilePart filePart, PatentFieldsPaths paths) {
+    public Mono<Void> uploadPatent(FilePart filePart, PatentFieldsPaths paths) {
 
         AtomicReference<File> file = new AtomicReference<>();
         try {
@@ -61,7 +60,45 @@ public class ApplicationPatentService {
                 .onErrorStop()
                 .doOnSuccess(v -> processPatents(file.get(), paths))
                 .then();
+    }
 
+    /**
+     * Finds a {@link Patent} by its UUID
+     *
+     * @param id id to find the patent
+     * @return {@link Flux} emitting the {@link Patent} found or {@link Flux#empty()} if none.
+     */
+    public Flux<Patent> findPatent(UUID id) {
+        return this.patentService.findPatent(id).flux();
+    }
+
+    /**
+     * Finds a {@link Patent} by its application reference
+     *
+     * @param application application reference to find the patent
+     * @return {@link Flux} emitting the {@link Patent} found or {@link Flux#empty()} if none.
+     */
+    public Flux<Patent> findPatent(String application) {
+        return this.patentService.findPatent(application);
+    }
+
+    /**
+     * Deletes the {@link Patent} by its application reference
+     *
+     * @param id id to delete the patent
+     * @return {@link Mono} when the operation is completed.
+     */
+    public Mono<Void> deletePatent(UUID id) {
+        return this.patentService.deletePatent(id);
+    }
+
+    /**
+     * Deletes all the {@link Patent}
+     *
+     * @return {@link Mono} when the operation is completed.
+     */
+    public Mono<Void> deleteAll() {
+        return this.patentService.deleteAll();
     }
 
     /**
@@ -73,7 +110,7 @@ public class ApplicationPatentService {
     private void processPatents(File file, PatentFieldsPaths paths) {
         try {
             Metadata metadata = new Metadata();
-            metadata.set(Metadata.RESOURCE_NAME_KEY, file.toString());
+            metadata.set(RESOURCE_NAME_KEY, file.toString());
             MediaType mediaType = new TikaConfig().getDetector().detect(
                     TikaInputStream.get(file.toPath()), metadata);
             if (mediaType.getSubtype().equals("zip"))
