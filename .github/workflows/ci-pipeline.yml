@@ -13,9 +13,9 @@ jobs:
       - uses: actions/checkout@v1
       - name: Build JAR
         run: |
-          cd nlp-processor
+          cd $GITHUB_WORKSPACE/nlp-processor
           ./gradlew clean build -PskipTests
-          cd patent-manager
+          cd $GITHUB_WORKSPACE/nlp-processor
           ./gradlew clean build -PskipTests
 
   test:
