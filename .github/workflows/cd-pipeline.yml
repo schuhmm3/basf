@@ -100,6 +100,7 @@ jobs:
   publish-chart:
     name: Publish chart
     runs-on: ubuntu-18.04
+    needs: publish-docker
     env:
       REGISTRY: rogomdi/
     steps:
