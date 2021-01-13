@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-18.04
     needs: test
     env:
-      REGISTRY: $GITHUB_ACTOR/
+      REGISTRY: rogomdi/
     steps:
       - uses: actions/checkout@v1
       - name: Set up JDK 11
