@@ -18,7 +18,7 @@ jobs:
           java-version: 11.0.4
       - name: Install kompose & helm
         run: |
-          curl -L https://github.com/kubernetes-incubator/kompose/releases/download/v0.7.0/kompose-linux-amd64 -o kompose
+          curl -L https://github.com/kubernetes/kompose/releases/download/v1.21.0/kompose-linux-amd64 -o kompose
           chmod +x kompose
           sudo mv kompose /usr/local/bin/kompose
           wget https://get.helm.sh/helm-v3.4.2-linux-amd64.tar.gz
