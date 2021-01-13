@@ -1,3 +1,4 @@
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 ![CI Pipeline](https://github.com/rogomdi/basf/workflows/CI%20Pipeline/badge.svg)
 ![CD Pipeline](https://github.com/rogomdi/basf/workflows/CD%20Pipeline/badge.svg)
 
