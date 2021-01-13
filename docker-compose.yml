@@ -2,23 +2,9 @@ version: "3.4"
 
 services:
 
-  mongo:
-    image: mongo:4.0-xenial
-    expose:
-      - 27017
-    ports:
-      - 27017:27017
-    restart: always
-    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all"]
-    volumes:
-      - mongo-data:/data/db
-    labels:
-      kompose.image-pull-policy: "Always"
-      kompose.volume.size: 100Gi
-
   patent-manager:
     image: ${REGISTRY}patent-manager:${PATENT_MANAGER_VERSION:-latest}
-#    deploy:
+    #    deploy:
 # Commented due to low resources on local
 #      resources:
 #        reservations:
@@ -59,23 +45,50 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
       start_period: 60s
 
+  ######################## Mongo ##############################
+  mongo:
+    image: mongo:4.0-xenial
+    expose:
+      - 27017
+    ports:
+      - 27017:27017
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all"]
+    volumes:
+      - mongo-data:/data/db
+    labels:
+      kompose.image-pull-policy: "Always"
+      kompose.volume.size: 100Gi
+
   ##################### Kafka + Zookeeper #####################
   kafka:
     image: wurstmeister/kafka:2.13-2.6.0
-    container_name: kafka
     ports:
       - 9092:9092
     environment:
-      - KAFKA_ADVERTISED_PORT=9092
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_ADVERTISED_HOST_NAME=kafka
+      KAFKA_ADVERTISED_PORT: 9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_HOST_NAME: kafka
     depends_on:
       - zookeeper
+    labels:
+      kompose.image-pull-policy: "Always"
+
   zookeeper:
     image: wurstmeister/zookeeper
-    container_name: zookeeper
     ports:
       - 2181:2181
+    labels:
+      kompose.image-pull-policy: "Always"
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop:3.27.0
+    environment:
+      KAFKA_BROKERCONNECT: kafka:9092
+    ports:
+      - 9000:9000
+    labels:
+      kompose.image-pull-policy: "Always"
 
 volumes:
   mongo-data:
