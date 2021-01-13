@@ -60,7 +60,7 @@ jobs:
           ./build-image.sh
       - name: Build Docker image Patent Manager
         run: |
-          cd $GITHUB_WORKSPACE/nlp-processor
+          cd $GITHUB_WORKSPACE/patent-manager
           ./gradlew clean build -PskipTests
           cd docker
           ./build-image.sh
