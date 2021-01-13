@@ -66,8 +66,8 @@ jobs:
           ./build-image.sh
       - name: Publish Docker image
         run: |
-          docker push $REGISTRYpatent-manager
-          docker push $REGISTRYnlp-processor
+          docker push ${{ env.REGISTRY }}patent-manager
+          docker push ${{ env.REGISTRY }}nlp-processor
 
   publish-chart:
     name: Publish chart
