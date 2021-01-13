@@ -20,23 +20,18 @@ public class UploadRequest {
     private FilePart file;
 
     @Schema(description = "Path to retrieve the application reference from the document", defaultValue = "questel-patent-document/bibliographic-data/application-reference/document-id[@data-format='questel']/doc-number")
-    @NotBlank
     private String application = "questel-patent-document/bibliographic-data/application-reference/document-id[@data-format='questel']/doc-number";
 
     @Schema(description = "Path to retrieve the date from the document", defaultValue = "questel-patent-document/bibliographic-data/application-reference/document-id/date")
-    @NotBlank
     private String date = "questel-patent-document/bibliographic-data/application-reference/document-id/date";
 
     @Schema(description = "Path to retrieve the title from the document", defaultValue = "questel-patent-document/bibliographic-data/invention-title")
-    @NotBlank
     private String title = "questel-patent-document/bibliographic-data/invention-title";
 
     @Schema(name="abstract", description = "Path to retrieve the abstract from the document", defaultValue = "questel-patent-document/abstract")
-    @NotBlank
     private String summary = "questel-patent-document/abstract";
 
     @Schema(description = "Path to retrieve the text from the document", defaultValue = "questel-patent-document/description")
-    @NotBlank
     private String text = "questel-patent-document/description";
 
     @Schema(description = "Flag to run the process asynchronously", defaultValue = "true")
