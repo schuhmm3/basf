@@ -5,6 +5,9 @@ fi
 if [[ -z ${BUILD_IMAGES} ]]; then
   BUILD_IMAGES=false
 fi
+if [[ -z ${PACKAGE} ]]; then
+  PACKAGE=false
+fi
 if [ "$BUILD_IMAGES" = true ] ; then
   home=$PWD
   echo "Building NLP Processor"
@@ -25,6 +28,8 @@ fi
 echo "Building chart"
 cp docker-compose.yml basf-test.yml
 kompose convert -f basf-test.yml --chart
-helm package basf-test --version "${CHART_VERSION}-local" --app-version "${CHART_VERSION}"
-rm -rf basf-test
+if [ "$PACKAGE" = true ] ; then
+  helm package basf-test --version "${CHART_VERSION}-local" --app-version "${CHART_VERSION}"
+  rm -rf basf-test
+fi
 rm basf-test.yml

@@ -28,7 +28,7 @@ jobs:
         run: |
           ./build-all.sh
           mkdir charts
-          mv basf-test* charts/
+          mv basf-test/ charts/
       - name: Publish Helm chart
         uses: stefanprodan/helm-gh-pages@master
         with:
