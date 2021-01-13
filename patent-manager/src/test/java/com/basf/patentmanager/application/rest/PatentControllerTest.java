@@ -41,7 +41,7 @@ class PatentControllerTest {
 
     @Test
      void uploadReturnsOkIfValidRequest() {
-        when(service.uploadPatent(any(FilePart.class), any(PatentFieldsPaths.class))).thenReturn(Mono.just(true).then());
+        when(service.uploadPatent(any(FilePart.class), any(PatentFieldsPaths.class), any(Boolean.class))).thenReturn(Mono.just(true).then());
         var bodyBuilder = new MultipartBodyBuilder();
         bodyBuilder.part("file", new ClassPathResource("US06193294B1.xml"));
         bodyBuilder.part("application", "path/application");
@@ -58,7 +58,7 @@ class PatentControllerTest {
 
     @Test
      void uploadReturns400IfNotValidRequest() {
-        when(service.uploadPatent(any(FilePart.class), any(PatentFieldsPaths.class))).thenReturn(Mono.just(true).then());
+        when(service.uploadPatent(any(FilePart.class), any(PatentFieldsPaths.class), any(Boolean.class))).thenReturn(Mono.just(true).then());
         var bodyBuilder = new MultipartBodyBuilder();
         bodyBuilder.part("file", new ClassPathResource("US06193294B1.xml"));
         bodyBuilder.part("application", "");
@@ -78,7 +78,7 @@ class PatentControllerTest {
 
     @Test
      void getReturnsPatent() {
-        when(service.uploadPatent(any(FilePart.class), any(PatentFieldsPaths.class))).thenReturn(Mono.just(true).then());
+        when(service.uploadPatent(any(FilePart.class), any(PatentFieldsPaths.class), any(Boolean.class))).thenReturn(Mono.just(true).then());
         List<Patent> patentBody = Collections.singletonList(new Patent("", Date.from(Instant.now()),"","",""));
         when(service.findPatent(patentBody.get(0).getUuid())).thenReturn(Flux.fromIterable(patentBody));
         this.webTestClient.get()

@@ -4,6 +4,7 @@ import com.basf.patentmanager.domain.api.NlpApi;
 import com.basf.patentmanager.domain.model.Entity;
 import com.basf.patentmanager.domain.model.Patent;
 import com.basf.patentmanager.domain.repository.PatentRepository;
+import com.basf.patentmanager.infrastructure.repository.AsynchronousRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -27,13 +28,13 @@ class DomainPatentServiceTest {
     private final static List<Entity> TEST_ENTITIES = Collections.singletonList(new Entity("ORGANIZATION","BASF"));
     private final PatentRepository patentRepository = mock(PatentRepository.class);
     private final NlpApi nlpApi = mock(NlpApi.class);
-    private final DomainPatentService domainPatentService = new DomainPatentService(patentRepository, nlpApi);
+    private final DomainPatentService domainPatentService = new DomainPatentService(patentRepository, mock(AsynchronousRepository.class), nlpApi);
 
     @Test
-    void addPatent() {
+    void addPatentSync() {
         when(patentRepository.save(any(Patent.class))).thenAnswer(i -> Mono.just(i.getArguments()[0]));
         when(nlpApi.getEntities(any(String.class))).thenReturn(TEST_ENTITIES);
-        Patent patent = domainPatentService.addPatent(TEST_PATENT).block();
+        Patent patent = domainPatentService.addPatent(TEST_PATENT, false).block();
         assertNotNull(patent);
         assertEquals(TEST_ENTITIES, patent.getEntities());
     }

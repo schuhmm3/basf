@@ -48,7 +48,7 @@ public class ApplicationPatentService {
      * @param paths    Paths from the XML to retrieve all the fields
      * @return {@link Mono} of {@link Void} when the upload ends
      */
-    public Mono<Void> uploadPatent(FilePart filePart, PatentFieldsPaths paths) {
+    public Mono<Void> uploadPatent(FilePart filePart, PatentFieldsPaths paths, boolean async) {
 
         AtomicReference<File> file = new AtomicReference<>();
         try {
@@ -58,7 +58,7 @@ public class ApplicationPatentService {
         }
         return filePart.transferTo(file.get())
                 .onErrorStop()
-                .doOnSuccess(v -> processPatents(file.get(), paths))
+                .doOnSuccess(v -> processPatents(file.get(), paths, async))
                 .then();
     }
 
@@ -106,17 +106,18 @@ public class ApplicationPatentService {
      *
      * @param file  File to process
      * @param paths Paths from the XML to retrieve all the fields
+     * @param async Flag to process the patents asynchronously
      */
-    private void processPatents(File file, PatentFieldsPaths paths) {
+    private void processPatents(File file, PatentFieldsPaths paths, boolean async) {
         try {
             Metadata metadata = new Metadata();
             metadata.set(RESOURCE_NAME_KEY, file.toString());
             MediaType mediaType = new TikaConfig().getDetector().detect(
                     TikaInputStream.get(file.toPath()), metadata);
             if (mediaType.getSubtype().equals("zip"))
-                readZip(file, paths);
+                readZip(file, paths, async);
             else if (mediaType.getSubtype().endsWith("xml"))
-                readXml(file, paths);
+                readXml(file, paths, async);
             else
                 throw new PatentException(ApplicationError.INVALID_FILE_FORMAT);
         } catch (IOException | TikaException e) {
@@ -129,10 +130,11 @@ public class ApplicationPatentService {
      *
      * @param file  XML File to process
      * @param paths Paths from the XML to retrieve all the patent fields
+     * @param async Flag to process the patent asynchronously
      */
-    private void readXml(File file, PatentFieldsPaths paths) {
+    private void readXml(File file, PatentFieldsPaths paths, boolean async) {
         try {
-            this.patentService.addPatent(this.xmlMapperService.createPatentFromXml(new FileInputStream(file), paths)).subscribe();
+            this.patentService.addPatent(this.xmlMapperService.createPatentFromXml(new FileInputStream(file), paths), async).subscribe();
         } catch (IOException e) {
             throw new PatentException(ApplicationError.READ_FILE_ERROR, e);
         }
@@ -143,13 +145,14 @@ public class ApplicationPatentService {
      *
      * @param file  File to process
      * @param paths Paths from the XML to retrieve all the fields
+     * @param async Flag to process all the patents asynchronously
      */
-    private void readZip(File file, PatentFieldsPaths paths) {
+    private void readZip(File file, PatentFieldsPaths paths, boolean async) {
         try (ZipFile zf = new ZipFile(file)) {
             log.info("Reading zip file {}", zf.getName());
             zf.stream().parallel()
                     .map(entry -> readZipEntry(zf, entry, paths))
-                    .map(patentService::addPatent)
+                    .map(patent -> patentService.addPatent(patent, async))
                     .forEach(Mono::subscribe);
         } catch (IOException e) {
             throw new PatentException(ApplicationError.READ_FILE_ERROR, e);

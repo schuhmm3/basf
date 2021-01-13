@@ -13,7 +13,7 @@ import java.util.UUID;
  */
 public interface PatentService {
 
-    Mono<Patent> addPatent(Patent patent);
+    Mono<Patent> addPatent(Patent patent, boolean async);
 
     Mono<Patent> findPatent(UUID id);
 

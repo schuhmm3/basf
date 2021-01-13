@@ -11,9 +11,21 @@ spring:
       database: basf
   codec:
     max-in-memory-size: 20MB
-
+  cloud:
+    stream:
+      bindings:
+        entities-out-0:
+          destination: processEntities-input
+        patent-in-0:
+          destination: patent-input
+          consumer:
+            maxAttempts: 1
+      function:
+        definition: patent;entities
 server:
   port: 8082
+
+
 
 nlp:
   hostname: localhost

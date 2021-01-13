@@ -19,24 +19,27 @@ public class UploadRequest {
     @NonNull
     private FilePart file;
 
-    @Schema(defaultValue = "questel-patent-document/bibliographic-data/application-reference/document-id[@data-format='questel']/doc-number")
+    @Schema(description = "Path to retrieve the application reference from the document", defaultValue = "questel-patent-document/bibliographic-data/application-reference/document-id[@data-format='questel']/doc-number")
     @NotBlank
-    private String application;
+    private String application = "questel-patent-document/bibliographic-data/application-reference/document-id[@data-format='questel']/doc-number";
 
-    @Schema(defaultValue = "questel-patent-document/bibliographic-data/application-reference/document-id/date")
+    @Schema(description = "Path to retrieve the date from the document", defaultValue = "questel-patent-document/bibliographic-data/application-reference/document-id/date")
     @NotBlank
-    private String date;
+    private String date = "questel-patent-document/bibliographic-data/application-reference/document-id/date";
 
-    @Schema(defaultValue = "questel-patent-document/bibliographic-data/invention-title")
+    @Schema(description = "Path to retrieve the title from the document", defaultValue = "questel-patent-document/bibliographic-data/invention-title")
     @NotBlank
-    private String title;
+    private String title = "questel-patent-document/bibliographic-data/invention-title";
 
-    @Schema(defaultValue = "questel-patent-document/abstract")
+    @Schema(name="abstract", description = "Path to retrieve the abstract from the document", defaultValue = "questel-patent-document/abstract")
     @NotBlank
-    private String summary;
+    private String summary = "questel-patent-document/abstract";
 
-    @Schema(defaultValue = "questel-patent-document/description")
+    @Schema(description = "Path to retrieve the text from the document", defaultValue = "questel-patent-document/description")
     @NotBlank
-    private String text;
+    private String text = "questel-patent-document/description";
+
+    @Schema(description = "Flag to run the process asynchronously", defaultValue = "true")
+    private Boolean async = true;
 
 }

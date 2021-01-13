@@ -1,8 +1,12 @@
 package com.basf.patentmanager.domain.service;
 
+import com.basf.patentmanager.application.exception.ApplicationError;
+import com.basf.patentmanager.application.exception.PatentException;
 import com.basf.patentmanager.domain.api.NlpApi;
 import com.basf.patentmanager.domain.model.Patent;
 import com.basf.patentmanager.domain.repository.PatentRepository;
+import com.basf.patentmanager.infrastructure.entity.EntityEventInput;
+import com.basf.patentmanager.infrastructure.repository.AsynchronousRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,19 +26,55 @@ import java.util.UUID;
 public class DomainPatentService implements PatentService {
 
     private final PatentRepository patentRepository;
+    private final AsynchronousRepository asynchronousRepository;
     private final NlpApi nlpApi;
 
     /**
      * Process and stores the patent in the repository
      *
      * @param patent Patent to process and store
+     * @param async Flag to process patent asynchronous
      * @return {@link Mono} emitting the saved {@link Patent} or {@link Mono#empty()} if none.
      */
     @Override
-    public Mono<Patent> addPatent(Patent patent) {
+    public Mono<Patent> addPatent(Patent patent, boolean async) {
+        if (async) {
+            log.info("Processing patent async");
+            return addPatentAsync(patent);
+        }else{
+            log.info("Processing patent synchronously");
+            return this.addPatentSync(patent);
+        }
+    }
+
+    /**
+     * Processes the patent in a synchronous way by calling through the REST API the Nlp Service and stores it in the repository
+     *
+     * @param patent Patent to process and store
+     * @return {@link Mono} emitting the saved {@link Patent} or {@link Mono#empty()} if none.
+     */
+    private Mono<Patent> addPatentSync(Patent patent) {
         patent.setEntities(this.nlpApi.getEntities(patent.getText()));
         log.debug("Entities found: {}", patent.getEntities());
         return this.patentRepository.save(patent);
+    }
+
+    /**
+     * Processes the patent in an asynchronous way by sending a message to the Nlp Service and stores it in the repository
+     *
+     * @param patent Patent to process and store
+     * @return {@link Mono} emitting the saved {@link Patent} or {@link Mono#empty()} if none.
+     */
+    private Mono<Patent> addPatentAsync(Patent patent) {
+        return this.patentRepository.save(patent).doOnSuccess(p -> {
+            try {
+                asynchronousRepository.getEntityEventInputs().put(new EntityEventInput(p.getUuid(),p.getText()));
+            } catch (InterruptedException e) {
+                log.warn("Interrupted exception when sending event");
+                Thread.currentThread().interrupt();
+                throw new PatentException(ApplicationError.INTERNAL_ERROR, e);
+            }
+        });
     }
 
     /**

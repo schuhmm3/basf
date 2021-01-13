@@ -8,3 +8,12 @@ server:
 spring:
   codec:
     max-in-memory-size: 20MB
+  cloud:
+    stream:
+      bindings:
+        processEntities-in-0:
+          destination: processEntities-input
+          consumer:
+            maxAttempts: 1
+        processEntities-out-0:
+          destination: patent-input

@@ -39,15 +39,20 @@ bootRun {
 
 
 dependencies {
-    implementation group: 'org.apache.tika', name: 'tika-parsers', version: '1.25'
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-webflux-ui', version: '1.5.2'
+    //Spring dependencies
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation group: 'com.googlecode.jmapper-framework', name: 'jmapper-core', version: '1.6.1.CR2'
+    implementation 'org.springframework.cloud:spring-cloud-stream'
+    implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+    //Swagger
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-webflux-ui', version: '1.5.2'
+    implementation group: 'org.apache.tika', name: 'tika-parsers', version: '1.25'
+    implementation group: 'com.googlecode.jmapper-framework', name: 'jmapper-core', version: '1.6.1.CR2'
     compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    testImplementation 'org.springframework.cloud:spring-cloud-stream-test-support'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
     testImplementation 'io.projectreactor:reactor-test'

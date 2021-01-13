@@ -7,6 +7,7 @@ import com.basf.patentmanager.application.model.rest.UploadRequest;
 import com.basf.patentmanager.application.service.ApplicationPatentService;
 import com.basf.patentmanager.domain.model.Patent;
 import com.googlecode.jmapper.JMapper;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,11 +35,12 @@ public class PatentController {
     public Mono<Void> process(@ModelAttribute UploadRequest request) {
         PatentFieldsPaths paths = new JMapper<>(PatentFieldsPaths.class, UploadRequest.class).getDestination(request);
         if (paths.pathsAreValid())
-            return this.patentService.uploadPatent(request.getFile(), paths);
+            return this.patentService.uploadPatent(request.getFile(), paths, request.getAsync());
         else
             throw new PatentException(ApplicationError.INVALID_XML_PATHS);
     }
 
+    @Hidden
     @GetMapping
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Flux<String> noContent() {
