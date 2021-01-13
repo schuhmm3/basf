@@ -75,7 +75,11 @@ In order to build all components, from root folder you have to do one of the fol
 
 Run in docker
 ---
-From root folder you have to run the following command to start docker containers:
+
+From root folder you have to run the following command to start docker containers with the docker hub images:
+- <code>REGISTRY=rogomdi/ docker-compose up -d</code>
+
+Or if you have built them on your computer:
 - <code>docker-compose up -d</code>
 
 When you run docker compose, these are the ports exposed to your computer:
@@ -90,8 +94,11 @@ Run in kubernetes
 ---
 **Note: You need to have installed kompose and helm CLI** <br>
 
-From root folder you have to run the following command to start docker containers:
+From root folder you have to run the following command to run it building the images:
 - <code>PACKAGE=true BUILD_IMAGES=true ./build-all.sh</code>
+  
+Or you can run it with the images uploaded to dockerhub by the CD:
+- <code>REGISTRY=rogomdi/ ./build-all.sh</code>
 
 Install the chart by running: `helm install basf-coding-challenge basf-test-1.0.0-local.tgz`
 
