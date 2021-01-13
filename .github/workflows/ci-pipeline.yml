@@ -81,7 +81,13 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11.0.4
-      - name: Build Docker image NLP Processor
+      - name: Install kompose & helm
+        run: |
+          curl -L https://github.com/kubernetes-incubator/kompose/releases/download/v0.7.0/kompose-linux-amd64 -o kompose
+          chmod +x kompose
+          sudo apt-get update
+          sudo apt-get install helm
+      - name: Build chart
         run: |
           ./build-all.sh
           mkdir charts
