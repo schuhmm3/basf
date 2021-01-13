@@ -1,5 +1,5 @@
-![CI Pipeline](https://github.com/rogomdi/basf/workflows/ci-pipeline.yml/badge.svg)
-![CD Pipeline](https://github.com/rogomdi/basf/workflows/cd-pipeline.yml/badge.svg)
+![CI Pipeline](https://github.com/rogomdi/basf/workflows/CI%20Pipeline/badge.svg)
+![CD Pipeline](https://github.com/rogomdi/basf/workflows/CD%20Pipeline/badge.svg)
 
 # CODING CHALLENGE
 
