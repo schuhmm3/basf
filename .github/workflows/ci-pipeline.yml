@@ -37,10 +37,11 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/nlp-processor
           ./gradlew unitTest
+
   publish-docker:
     name: Publish Docker images
     runs-on: ubuntu-18.04
-    needs: publish-artifacts
+    needs: test
     env:
       REGISTRY: $GITHUB_ACTOR/
     steps:
