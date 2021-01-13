@@ -1,23 +1,13 @@
-
-springdoc:
-  api-docs:
-    path: /docs
-  swagger-ui:
-    path: /swagger
-
 spring:
   data:
     mongodb:
-      database: basf
       host: mongo
-  codec:
-    max-in-memory-size: 20MB
-
-server:
-  port: 8082
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: kafka:9092
+          zk-nodes: zookeeper:2181
 
 nlp:
   hostname: nlp-processor
-  port: 8081
-  protocol: http
-  ner-endpoint: api/document/entities
