@@ -37,7 +37,7 @@ class AsynchronousNlpApi {
     @Bean
     public Function<EntityEventInput, Message<EntityEventOutput>> processEntities() {
         return input -> {
-            log.info("Received some input");
+            log.debug("Received some input");
             return MessageBuilder
                     .withPayload(
                             new EntityEventOutput(

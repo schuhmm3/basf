@@ -39,10 +39,10 @@ public class DomainPatentService implements PatentService {
     @Override
     public Mono<Patent> addPatent(Patent patent, boolean async) {
         if (async) {
-            log.info("Processing patent async");
+            log.debug("Processing patent async");
             return addPatentAsync(patent);
         }else{
-            log.info("Processing patent synchronously");
+            log.debug("Processing patent synchronously");
             return this.addPatentSync(patent);
         }
     }
