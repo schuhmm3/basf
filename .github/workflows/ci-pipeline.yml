@@ -21,7 +21,7 @@ jobs:
           curl -L https://github.com/kubernetes-incubator/kompose/releases/download/v0.7.0/kompose-linux-amd64 -o kompose
           chmod +x kompose
           wget https://get.helm.sh/helm-v3.4.2-linux-amd64.tar.gz
-          tar -zxvf helm-v3.0.0-linux-amd64.tar.gz
+          tar -zxvf helm-v3.4.2-linux-amd64.tar.gz
           mv linux-amd64/helm /usr/local/bin/helm
       - name: Build chart
         run: |
