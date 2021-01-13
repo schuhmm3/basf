@@ -1,0 +1,21 @@
+springdoc:
+  api-docs:
+    path: /docs
+  swagger-ui:
+    path: /swagger
+server:
+  port: 8081
+spring:
+  codec:
+    max-in-memory-size: 20MB
+  cloud:
+    stream:
+      bindings:
+        processEntities-in-0:
+          group: nlp-processor
+          destination: processEntities-input
+          consumer:
+            maxAttempts: 1
+        processEntities-out-0:
+          group: nlp-processor
+          destination: patent-input

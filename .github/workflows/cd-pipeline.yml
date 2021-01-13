@@ -1,0 +1,125 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
+      - name: Build JAR
+        run: |
+          cd $GITHUB_WORKSPACE/nlp-processor
+          ./gradlew clean build -PskipTests
+          cd $GITHUB_WORKSPACE/nlp-processor
+          ./gradlew clean build -PskipTests
+
+  test:
+    name: Run Test
+    runs-on: ubuntu-18.04
+    needs: build
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
+      - name: Patent Manager Test
+        run: |
+          cd $GITHUB_WORKSPACE/patent-manager
+          ./gradlew unitTest
+          ./gradlew intTest
+      - name: NLP Processor Test
+        run: |
+          cd $GITHUB_WORKSPACE/nlp-processor
+          ./gradlew unitTest
+          ./gradlew intTest
+
+  publish-artifacts:
+    name: Publish artifacts
+    runs-on: ubuntu-18.04
+    needs: test
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
+      - name: NLP Processor Test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USERNAME: rogomdi
+        run: |
+          cd $GITHUB_WORKSPACE/nlp-processor
+          ./gradlew publish
+      - name: Patent Manager Test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd $GITHUB_WORKSPACE/patent-manager
+          ./gradlew publish
+
+  publish-docker:
+    name: Publish Docker images
+    runs-on: ubuntu-18.04
+    needs: test
+    env:
+      REGISTRY: rogomdi/
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11.0.4
+      - name: Login to Docker Hub
+        run: docker login -u $GITHUB_ACTOR -p ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Build Docker image NLP Processor
+        run: |
+          cd $GITHUB_WORKSPACE/nlp-processor
+          ./gradlew clean build -PskipTests
+          cd docker
+          ./build-image.sh
+      - name: Build Docker image Patent Manager
+        run: |
+          cd $GITHUB_WORKSPACE/patent-manager
+          ./gradlew clean build -PskipTests
+          cd docker
+          ./build-image.sh
+      - name: Publish Docker image
+        run: |
+          docker push ${{ env.REGISTRY }}patent-manager
+          docker push ${{ env.REGISTRY }}nlp-processor
+
+  publish-chart:
+    name: Publish chart
+    runs-on: ubuntu-18.04
+    env:
+      REGISTRY: rogomdi/
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11.0.4
+      - name: Install kompose
+        run: |
+          curl -L https://github.com/kubernetes/kompose/releases/download/v1.21.0/kompose-linux-amd64 -o kompose
+          chmod +x kompose
+          sudo mv kompose /usr/local/bin/kompose
+      - name: Build chart
+        run: |
+          ./build-all.sh
+          mkdir charts
+          mv basf-test/ charts/
+      - name: Publish Helm chart
+        uses: stefanprodan/helm-gh-pages@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: charts

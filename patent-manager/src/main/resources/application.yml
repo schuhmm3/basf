@@ -1,0 +1,36 @@
+
+springdoc:
+  api-docs:
+    path: /docs
+  swagger-ui:
+    path: /swagger
+
+spring:
+  data:
+    mongodb:
+      database: basf
+  codec:
+    max-in-memory-size: 20MB
+  cloud:
+    stream:
+      bindings:
+        entities-out-0:
+          group: patent-manager
+          destination: processEntities-input
+        patent-in-0:
+          group: patent-manager
+          destination: patent-input
+          consumer:
+            maxAttempts: 1
+      function:
+        definition: patent;entities
+server:
+  port: 8082
+
+
+
+nlp:
+  hostname: localhost
+  port: 8081
+  protocol: http
+  ner-endpoint: api/document/entities
