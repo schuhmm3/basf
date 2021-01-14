@@ -2,13 +2,13 @@ apiVersion: v1
 entries:
   basf-test:
   - apiVersion: v1
-    created: "2021-01-13T23:08:11.474376868Z"
+    created: "2021-01-14T16:56:26.560914646Z"
     description: A generated Helm Chart for basf-test from Skippbox Kompose
-    digest: 9050f3d79a19e0250d097d8d04522df87b684a4bc94b094c337a6b768e51fae9
+    digest: 5ff91e41a3ace78b0e21d4e6257c39569d03dbe28d4e972a951810f3914a0819
     keywords:
     - basf-test
     name: basf-test
     urls:
     - https://rogomdi.github.io/basf/basf-test-0.0.1.tgz
     version: 0.0.1
-generated: "2021-01-13T23:08:11.473870962Z"
+generated: "2021-01-14T16:56:26.560509342Z"
