@@ -9,6 +9,7 @@ import com.basf.patentmanager.domain.model.Patent;
 import com.googlecode.jmapper.JMapper;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -49,7 +50,7 @@ public class PatentController {
 
     @Operation(summary = "Finds patents by its UUID")
     @GetMapping(value = "/{id}")
-    public Flux<Patent> findPatent(@PathVariable final String id) {
+    public Flux<Patent> findPatent(@Parameter(description = "UUID or application to find the patent") @PathVariable final String id) {
         try {
             return this.patentService.findPatent(UUID.fromString(id));
         } catch (IllegalArgumentException e) {
@@ -59,7 +60,7 @@ public class PatentController {
 
     @Operation(summary = "Deletes a patent by its UUID")
     @DeleteMapping(value = "/{id}")
-    public Mono<Void> deletePatent(@PathVariable final UUID id) {
+    public Mono<Void> deletePatent(@Parameter(description = "UUID to delete the patent") @PathVariable final UUID id) {
         return this.patentService.deletePatent(id);
     }
 

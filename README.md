@@ -61,17 +61,17 @@ In order to build all components, from root folder you have to do one of the fol
 
 - Build helm chart locally: <br>
   **Note: You need to have installed kompose and helm CLI** <br>
-  Run the script `build-all.sh` on the root folder with the following command
+  Run the script `build-all.sh` on the root folder with the following command <br>
   <code>PACKAGE=true BUILD_IMAGES=true ./build-all.sh</code>
 
 - Compile all microservices and build docker images: <br>
-  Go to nlp-processor and patent-manager folders and run the following command on both: <code>cd docker && ./build-image.sh</code>
+  Go to nlp-processor and patent-manager folders and run the following command on both:<br> <code>./gradlew build && cd docker && ./build-image.sh</code>
 
 - Compile all microservices: <br>
-  Go to nlp-processor and patent-manager folders and run the following command on both: <code>./gradlew build</code>
+  Go to nlp-processor and patent-manager folders and run the following command on both: <br> <code>./gradlew build</code>
   
 - Compile all microservices skipping tests: <br>
-  Go to nlp-processor and patent-manager folders and run the following command on both: <code>./gradlew build -PskipTests</code>
+  Go to nlp-processor and patent-manager folders and run the following command on both: <br> <code>./gradlew build -PskipTests</code>
 
 Run in docker
 ---
