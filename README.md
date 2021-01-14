@@ -12,6 +12,7 @@ The project used the followig technologies:
 - Spring Cloud
 - Spring Cloud Stream
 - Apache Kafka & Apache Zookeeper
+- Stanford Core NLP 4.2.0
 - MongoDB
 - Github Actions
 - Github Packages
